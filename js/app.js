@@ -164,6 +164,8 @@
     home.setAttribute("aria-hidden", "true");
 
     animateWindowOpen(dialog, originEl);
+    // Let the audio layer play a distinct "window opened" chime.
+    document.dispatchEvent(new CustomEvent("lemonade:windowopen"));
 
     const closeBtn = dialog.querySelector("[data-close]");
     if (closeBtn) closeBtn.focus({ preventScroll: true });
@@ -174,6 +176,9 @@
     const origin = activeOrigin;
     activeDialog = null;
     activeOrigin = null;
+
+    // Only when a window was actually open: play the close "whoosh".
+    if (dialog) document.dispatchEvent(new CustomEvent("lemonade:windowclose"));
 
     const finish = () => {
       Object.values(dialogs).forEach((el) => {
