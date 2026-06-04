@@ -192,7 +192,8 @@ a,
   left: 0;
   right: 0;
   height: var(--menubar-h);
-  z-index: 60;
+  /* Above the dialog layer (z 100) so the menu bar is never covered by a window. */
+  z-index: 200;
   display: flex;
   align-items: stretch;
   justify-content: space-between;
@@ -600,14 +601,19 @@ body.is-muted .menubar__sound {
 /* —— Dialog layer —— */
 .dialog-layer {
   position: fixed;
-  inset: 0;
+  /* Start below the menu bar so windows live under it, never over it. */
+  top: var(--menubar-h);
+  right: 0;
+  bottom: 0;
+  left: 0;
   z-index: 100;
   pointer-events: auto;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: rgba(0, 0, 0, 0.15);
+  /* warm ink-tinted dim to match the palette */
+  background: rgba(42, 32, 22, 0.22);
 }
 
 .dialog-layer[hidden] {
@@ -619,7 +625,7 @@ body.is-muted .menubar__sound {
   position: relative;
   width: 464px;
   max-width: calc(100vw - 48px);
-  max-height: calc(100vh - 48px);
+  max-height: calc(100vh - var(--menubar-h) - 48px);
   display: flex;
   flex-direction: column;
   background: var(--color-surface);
