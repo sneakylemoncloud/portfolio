@@ -33,12 +33,18 @@
   --green: #7cbf4c;
   --ground-h: 78px;
   --menubar-h: 30px;
+  --phoenix-scale: 2.1;
+  --phoenix-top: 46px;
   --cat-scale: 3;
   /* Seat the cat's feet on the horizon line. The 32px sprite is scaled 3x from its
      bottom-left origin, which lifts its visible bottom ~66px above the stage floor,
      so the stage floor must sit that far below the grass-top line. */
   --cat-bottom: calc(var(--ground-h) - 66px);
-  --font-primary: "Pixel Operator Mono", Inconsolata, monospace, sans-serif;
+  /* DM Mono is now the primary face everywhere; Space Mono carries accents.
+     Pixel Operator stays in the stack only as a fallback. */
+  --font-primary: "DM Mono", "Pixel Operator Mono", Inconsolata, monospace;
+  --font-body: "DM Mono", "Pixel Operator Mono", Inconsolata, monospace;
+  --font-accent: "Space Mono", "DM Mono", monospace;
   --shadow-window: 6px 6px 0 0 rgba(42, 32, 22, 0.32);
   /* inset top-left highlight = a single light source above the screen; hard drop = depth */
   --shadow-button: inset 1px 1px 0 0 rgba(255, 255, 255, 0.6), 3px 3px 0 0 var(--ink);
@@ -80,6 +86,9 @@ body {
   color: var(--color-text);
   background: var(--sky-bottom);
   cursor: var(--cursor-retro);
+  /* DM Mono's heaviest weight is 500 — let bold requests fall back to it
+     cleanly instead of synthesizing a blurry faux-bold. Italics are real. */
+  font-synthesis: none;
 }
 
 /* —— Sky clouds (decorative, behind page content) —— */
@@ -378,6 +387,93 @@ body.is-muted .menubar__sound {
   background: repeating-linear-gradient(90deg, #a6d863 0 4px, #8fc857 4px 8px);
 }
 
+/* —— Phoenix: a rare, slow flyby high in the sky (behind all content) —— */
+.phoenix {
+  position: absolute;
+  top: var(--phoenix-top, 46px);
+  left: 0;
+  z-index: 0;
+  width: calc(32px * var(--phoenix-scale, 2));
+  height: calc(32px * var(--phoenix-scale, 2));
+  pointer-events: none;
+  opacity: 0.9;
+  /* 50s cycle: crosses during the first ~40% (~20s), then waits off-screen
+     ~30s before returning — present, never constant. */
+  animation: phoenix-cross 50s linear infinite;
+  will-change: transform;
+}
+
+.phoenix-bob {
+  width: 100%;
+  height: 100%;
+  animation: phoenix-bob 3.2s ease-in-out infinite alternate;
+}
+
+.phoenix-sprite {
+  width: 32px;
+  height: 32px;
+  background: url("../assets/phoenix-fly.png") 0 0 / 192px 32px no-repeat;
+  image-rendering: pixelated;
+  transform: scale(var(--phoenix-scale, 2));
+  transform-origin: 0 0;
+  animation: phoenix-flap 0.85s steps(6) infinite;
+}
+
+@keyframes phoenix-cross {
+  0% { transform: translateX(-16vw); }
+  40% { transform: translateX(118vw); }
+  100% { transform: translateX(118vw); }
+}
+
+@keyframes phoenix-bob {
+  from { transform: translateY(-5px); }
+  to { transform: translateY(5px); }
+}
+
+@keyframes phoenix-flap {
+  from { background-position-x: 0; }
+  to { background-position-x: -192px; }
+}
+
+/* —— Birds: a small, faint gull flock that drifts by occasionally ——
+   Ink silhouettes (palette- and pixel-style consistent with the cat). */
+.flock {
+  position: absolute;
+  top: var(--flock-top, 64px);
+  left: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  /* ~62s cycle: ~27s drifting across, then off-screen ~35s. Rare and calm. */
+  animation: flock-cross 62s linear infinite;
+  will-change: transform;
+}
+
+.bird {
+  position: absolute;
+  width: 16px;
+  height: 11px;
+  background: url("../assets/birds.png") 0 0 / 32px 11px no-repeat;
+  image-rendering: pixelated;
+  animation: bird-flap 0.6s steps(2) infinite;
+}
+
+/* a loose, unsynced formation */
+.bird--1 { left: 0; top: 6px; transform: scale(1.4); }
+.bird--2 { left: 30px; top: 16px; transform: scale(1.1); animation-delay: -0.2s; }
+.bird--3 { left: 54px; top: 0; transform: scale(1.25); animation-delay: -0.34s; }
+
+@keyframes flock-cross {
+  0% { transform: translate(-14vw, 4px); }
+  44% { transform: translate(116vw, -10px); }
+  100% { transform: translate(116vw, -10px); }
+}
+
+@keyframes bird-flap {
+  from { background-position-x: 0; }
+  to { background-position-x: -32px; }
+}
+
 /* —— Home —— */
 .desktop {
   position: relative;
@@ -441,6 +537,8 @@ body.is-muted .menubar__sound {
   height: auto;
   min-height: 96px;
   padding: 12px 10px 14px;
+  /* match the project folder buttons (weight 400) rather than the default 700 */
+  font-weight: 400;
 }
 
 /* Each app carries its own fruit identity; lemon is the default selection color. */
@@ -563,6 +661,28 @@ body.is-muted .menubar__sound {
   background-image: var(--texture);
   overflow-y: auto;
   flex: 1;
+  /* Readable content type: DM Mono. font-synthesis:none avoids ugly faux-bold
+     for weights DM Mono doesn't ship (its heaviest is 500). */
+  font-family: var(--font-body);
+  font-synthesis: none;
+}
+
+/* DM Mono headlines read best at medium weight, not heavy (the reference look). */
+.welcome-content .is--heading-1,
+.case-study__title {
+  font-weight: 500;
+}
+
+/* Space Mono carries the small accent subheadings + labels for contrast. */
+.is--heading-2,
+.case-study__eyebrow,
+.case-meta__item dt,
+.case-study__crumb {
+  font-family: var(--font-accent);
+}
+
+.case-study__eyebrow {
+  font-style: italic;
 }
 
 .welcome-content > p {
@@ -1154,6 +1274,11 @@ body.is-muted .menubar__sound {
   .sky-cloud--4 { left: 15%; }
   .sky-cloud--5 { left: 48%; }
   .sky-cloud--repeat { display: none; }
+
+  .phoenix,
+  .flock {
+    display: none;
+  }
 
   .cat-stage {
     --cat-scale: 2.35;
