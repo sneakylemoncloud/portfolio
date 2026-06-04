@@ -42,6 +42,9 @@
 
   let activeDialog = null;
   let activeOrigin = null;
+  // Increments on every open/close so a deferred close callback can tell whether
+  // a newer action has superseded it (prevents stale cleanups from racing).
+  let opToken = 0;
 
   // Read the motion language from CSS so JS and CSS never drift apart.
   const rootStyle = getComputedStyle(document.documentElement);
@@ -149,6 +152,8 @@
   function openDialog(name, originEl) {
     const dialog = dialogs[name];
     if (!dialog) return;
+    // Mark a new operation so any in-flight close cleanup won't hide this window.
+    opToken += 1;
 
     Object.values(dialogs).forEach((el) => {
       el.hidden = true;
@@ -176,11 +181,17 @@
     const origin = activeOrigin;
     activeDialog = null;
     activeOrigin = null;
+    const myToken = (opToken += 1);
 
     // Only when a window was actually open: play the close "whoosh".
     if (dialog) document.dispatchEvent(new CustomEvent("lemonade:windowclose"));
 
+    let done = false;
     const finish = () => {
+      // Bail if already cleaned up, or if a newer open/close has superseded this
+      // one (e.g. a window was opened during this close animation).
+      if (done || opToken !== myToken) return;
+      done = true;
       Object.values(dialogs).forEach((el) => {
         el.hidden = true;
       });
@@ -192,6 +203,10 @@
 
     if (dialog) animateWindowClose(dialog, origin, finish);
     else finish();
+
+    // Safety net: if the close animation's callback is ever lost (interrupted),
+    // still reconcile the layer state — unless this close was superseded.
+    window.setTimeout(finish, 360);
   }
 
   document.querySelectorAll("[data-dialog]").forEach((btn) => {
