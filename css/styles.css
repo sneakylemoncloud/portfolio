@@ -474,6 +474,33 @@ body.is-muted .menubar__sound {
   to { background-position-x: -32px; }
 }
 
+/* —— Toucan: a rare, colorful feature flyby (self-animating GIF) ——
+   Much less frequent than the gulls so it stays a treat, not wallpaper. */
+.toucan {
+  position: absolute;
+  top: var(--toucan-top, 104px);
+  left: 0;
+  z-index: 0;
+  width: 60px;
+  height: 60px;
+  image-rendering: pixelated;
+  pointer-events: none;
+  opacity: 0.95;
+  /* 104s cycle, ~23s crossing then ~80s away; offset so it doesn't launch
+     with the gull flock. */
+  animation: toucan-cross 104s linear infinite;
+  animation-delay: -52s;
+  will-change: transform;
+}
+
+@keyframes toucan-cross {
+  0% { transform: translate(-16vw, 0px); }
+  7% { transform: translate(20vw, -7px); }
+  14% { transform: translate(58vw, 5px); }
+  22% { transform: translate(118vw, -3px); }
+  100% { transform: translate(118vw, -3px); }
+}
+
 /* —— Home —— */
 .desktop {
   position: relative;
@@ -1276,7 +1303,8 @@ body.is-muted .menubar__sound {
   .sky-cloud--repeat { display: none; }
 
   .phoenix,
-  .flock {
+  .flock,
+  .toucan {
     display: none;
   }
 
