@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 80" width="160" height="80" shape-rendering="crispEdges">
+  <!-- seamless rolling hills tile: endpoints match at x=0 and x=160 -->
+  <!-- back ridge (lightest, furthest) -->
+  <path d="M0 80 L0 40 C 26 30 54 30 80 40 C 106 50 134 30 160 40 L160 80 Z" fill="#c4e79a"/>
+  <!-- mid ridge -->
+  <path d="M0 80 L0 54 C 30 46 60 62 80 52 C 100 42 130 62 160 54 L160 80 Z" fill="#9ed064"/>
+  <!-- grass highlight on the mid ridge crest -->
+  <path d="M0 54 C 30 46 60 62 80 52 C 100 42 130 62 160 54" fill="none" stroke="#c0e88f" stroke-width="2"/>
+  <!-- two little pixel trees, kept away from the tile edges so tiling stays seamless -->
+  <g>
+    <rect x="44" y="44" width="3" height="8" fill="#8a6a3a"/>
+    <rect x="40" y="34" width="11" height="11" fill="#74b441"/>
+    <rect x="42" y="32" width="7" height="4" fill="#86c64f"/>
+  </g>
+  <g>
+    <rect x="112" y="46" width="3" height="9" fill="#8a6a3a"/>
+    <rect x="108" y="37" width="11" height="11" fill="#74b441"/>
+    <rect x="110" y="35" width="7" height="4" fill="#86c64f"/>
+  </g>
+</svg>

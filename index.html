@@ -11,7 +11,53 @@
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
+  <header class="menubar" role="banner">
+    <div class="menubar__group menubar__group--left">
+      <button type="button" class="menubar__brand" data-action="home" aria-label="Lemonade — home">
+        <span class="menubar__logo" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 16 16" shape-rendering="crispEdges">
+            <rect x="3" y="5" width="10" height="8" fill="var(--lemon, #ffd633)"/>
+            <rect x="2" y="6" width="12" height="6" fill="var(--lemon, #ffd633)"/>
+            <rect x="3" y="4" width="3" height="2" fill="#7cbf4c"/>
+            <rect x="5" y="3" width="2" height="2" fill="#7cbf4c"/>
+            <rect x="4" y="7" width="2" height="2" fill="#fff2a8"/>
+            <rect x="2" y="6" width="12" height="6" fill="none" stroke="#2a2016" stroke-width="1"/>
+          </svg>
+        </span>
+        <span class="menubar__brand-name">Lemonade</span>
+      </button>
+      <nav class="menubar__menus" aria-label="Sections">
+        <button type="button" class="menubar__item" data-dialog="work">Work</button>
+        <button type="button" class="menubar__item" data-dialog="not-work">Play</button>
+        <button type="button" class="menubar__item" data-dialog="about">About</button>
+      </nav>
+    </div>
+    <div class="menubar__group menubar__group--right">
+      <span class="menubar__dots" aria-hidden="true">
+        <i class="dot dot--lemon"></i><i class="dot dot--guava"></i><i class="dot dot--berry"></i><i class="dot dot--blue"></i><i class="dot dot--green"></i>
+      </span>
+      <button type="button" class="menubar__sound" data-sound-toggle aria-pressed="true" aria-label="Toggle sound">
+        <span class="menubar__sound-icon" aria-hidden="true">♪</span>
+      </button>
+      <span class="menubar__clock" id="menubar-clock" aria-label="Local time, India">--:-- IST</span>
+    </div>
+  </header>
+
   <main class="desktop" id="home">
+    <div class="sky-clouds" aria-hidden="true">
+      <img class="sky-cloud sky-cloud--0" src="assets/clouds/cloud-0.png" alt="" />
+      <img class="sky-cloud sky-cloud--1" src="assets/clouds/cloud-1.png" alt="" />
+      <img class="sky-cloud sky-cloud--2" src="assets/clouds/cloud-2.png" alt="" />
+      <img class="sky-cloud sky-cloud--3" src="assets/clouds/cloud-3.png" alt="" />
+      <img class="sky-cloud sky-cloud--4" src="assets/clouds/cloud-4.png" alt="" />
+      <img class="sky-cloud sky-cloud--5" src="assets/clouds/cloud-5.png" alt="" />
+      <img class="sky-cloud sky-cloud--0 sky-cloud--repeat" src="assets/clouds/cloud-0.png" alt="" />
+      <img class="sky-cloud sky-cloud--2 sky-cloud--repeat" src="assets/clouds/cloud-2.png" alt="" />
+    </div>
+    <div class="horizon" aria-hidden="true">
+      <div class="horizon__hills"></div>
+      <div class="horizon__ground"></div>
+    </div>
     <header class="home-header">
       <h1 class="home-name">Alex Shaji</h1>
       <p class="home-role">Product &amp; Interaction Designer</p>
@@ -19,9 +65,18 @@
     </header>
 
     <nav class="home-nav" aria-label="Site sections">
-      <button type="button" class="button--outline is--wider" data-dialog="work">Work</button>
-      <button type="button" class="button--outline is--wider" data-dialog="not-work">Not Work</button>
-      <button type="button" class="button--outline is--wider" data-dialog="about">About Me</button>
+      <button type="button" class="button--outline is--nav" data-dialog="work">
+        <span class="home-nav__icon" aria-hidden="true"></span>
+        <span class="home-nav__label">Work</span>
+      </button>
+      <button type="button" class="button--outline is--nav" data-dialog="not-work">
+        <span class="home-nav__icon" aria-hidden="true"></span>
+        <span class="home-nav__label">Not Work</span>
+      </button>
+      <button type="button" class="button--outline is--nav" data-dialog="about">
+        <span class="home-nav__icon" aria-hidden="true"></span>
+        <span class="home-nav__label">About Me</span>
+      </button>
     </nav>
   </main>
 
@@ -50,11 +105,12 @@
         <button type="button" class="close" data-close aria-label="Close window">x</button>
       </header>
       <div class="welcome-content">
+        <div class="work-index">
         <h2 class="is--heading-1">Selected projects</h2>
         <p>Open a folder to read more. Replace titles and copy with your real work.</p>
         <ul class="folder-grid" role="list">
           <li>
-            <button type="button" class="folder-item" data-project="compass">
+            <button type="button" class="folder-item" data-project="compass" data-case="compass">
               <img src="assets/icons/folder.svg" alt="" width="48" height="40" class="folder-item__icon" />
               <span class="folder-item__name">Compass</span>
             </button>
@@ -78,10 +134,159 @@
             </button>
           </li>
         </ul>
+        </div>
         <article class="project-detail" id="project-detail" hidden>
           <h3 class="is--heading-1 project-detail__title" id="project-detail-title"></h3>
           <p class="project-detail__body" id="project-detail-body"></p>
-          <button type="button" class="button--outline" id="project-detail-back">Back to folders</button>
+          <button type="button" class="button--outline" data-detail-back>Back to folders</button>
+        </article>
+
+        <!-- Full case study (mock content to stress-test the UI) -->
+        <article class="case-study" id="case-compass" hidden>
+          <div class="case-study__bar">
+            <button type="button" class="button--outline is--ghost is--back" data-detail-back>
+              <span aria-hidden="true">&larr;</span> Projects
+            </button>
+            <span class="case-study__crumb">Work / Compass</span>
+          </div>
+
+          <header class="case-study__head">
+            <p class="case-study__eyebrow">Case study</p>
+            <h3 class="is--heading-1 case-study__title">Compass</h3>
+            <p class="case-study__lede">
+              A navigation and onboarding system that helped first-time users of a B2B
+              analytics product reach their first insight 40% faster.
+            </p>
+          </header>
+
+          <dl class="case-meta">
+            <div class="case-meta__item">
+              <dt>Role</dt>
+              <dd>Lead Product Designer</dd>
+            </div>
+            <div class="case-meta__item">
+              <dt>Timeline</dt>
+              <dd>2023 · 4 months</dd>
+            </div>
+            <div class="case-meta__item">
+              <dt>Team</dt>
+              <dd>2 designers, 5 engineers</dd>
+            </div>
+            <div class="case-meta__item">
+              <dt>Platform</dt>
+              <dd>Responsive web</dd>
+            </div>
+          </dl>
+
+          <figure class="case-figure case-figure--bleed">
+            <img src="assets/placeholders/ph-hero.svg" alt="Placeholder for the Compass product hero" loading="lazy" />
+            <figcaption>The redesigned home — a guided trail replaces the empty dashboard.</figcaption>
+          </figure>
+
+          <section class="case-section">
+            <h4 class="is--heading-2">Overview</h4>
+            <p>
+              Compass is the analytics workspace that thousands of operations teams open
+              every morning. Powerful, but unforgiving: new users landed on a blank
+              dashboard with sixty data sources and no idea where to begin. Activation
+              stalled, and support tickets piled up in the first week of every trial.
+            </p>
+            <p>
+              I led the redesign of onboarding and in-product navigation — from research
+              through high-fidelity flows and engineering handoff — anchored on a single
+              question: how do we get someone to a moment of value before they give up?
+            </p>
+          </section>
+
+          <section class="case-section">
+            <h4 class="is--heading-2">The problem</h4>
+            <p>
+              Trial users were dropping off fast. The product assumed expertise it never
+              taught, and the navigation mirrored the database, not the user's job.
+            </p>
+            <figure class="case-figure">
+              <img src="assets/placeholders/ph-research.svg" alt="Placeholder for the research affinity map" loading="lazy" />
+              <figcaption>Two weeks of interviews, clustered into themes.</figcaption>
+            </figure>
+            <blockquote class="case-quote">
+              &ldquo;I can tell the answer is in here somewhere. I just can't find the door.&rdquo;
+              <cite>— Operations lead, trial day 2</cite>
+            </blockquote>
+          </section>
+
+          <section class="case-section">
+            <h4 class="is--heading-2">What research told us</h4>
+            <ul class="case-list">
+              <li>New users had a job in mind within 30 seconds — and no path to it.</li>
+              <li>The sidebar exposed structure, not tasks. Labels matched tables, not goals.</li>
+              <li>Power users had quietly built their own bookmarks to route around the nav.</li>
+              <li>&ldquo;First insight&rdquo; was the moment trials converted — or didn't.</li>
+            </ul>
+          </section>
+
+          <section class="case-section">
+            <h4 class="is--heading-2">Designing the trail</h4>
+            <p>
+              We reframed navigation around intent. Instead of a directory of sources, the
+              home became a short, guided trail: pick a goal, connect one source, see one
+              chart. Everything else stayed one keystroke away for the people who wanted it.
+            </p>
+            <div class="case-figure-pair">
+              <figure class="case-figure">
+                <img src="assets/placeholders/ph-before.svg" alt="Placeholder for the legacy navigation" loading="lazy" />
+                <figcaption>Before — the database, exposed.</figcaption>
+              </figure>
+              <figure class="case-figure">
+                <img src="assets/placeholders/ph-after.svg" alt="Placeholder for the Compass navigation" loading="lazy" />
+                <figcaption>After — a path organised by intent.</figcaption>
+              </figure>
+            </div>
+          </section>
+
+          <section class="case-section">
+            <h4 class="is--heading-2">The solution</h4>
+            <p>
+              The shipped experience pairs a persistent &ldquo;next best step&rdquo; rail
+              with a command palette for everyone past their first week. Onboarding is no
+              longer a wizard you dismiss — it's woven into the surface and fades as you grow.
+            </p>
+            <figure class="case-figure case-figure--bleed">
+              <img src="assets/placeholders/ph-solution.svg" alt="Placeholder for the guided flow" loading="lazy" />
+              <figcaption>The guided flow, from goal to first chart in under a minute.</figcaption>
+            </figure>
+            <figure class="case-figure case-figure--bleed">
+              <img src="assets/placeholders/ph-system.svg" alt="Placeholder for the pattern library" loading="lazy" />
+              <figcaption>A small pattern library kept the trail consistent across teams.</figcaption>
+            </figure>
+          </section>
+
+          <section class="case-section">
+            <h4 class="is--heading-2">Outcome</h4>
+            <ul class="case-stats" role="list">
+              <li class="case-stat">
+                <span class="case-stat__num">40%</span>
+                <span class="case-stat__label">faster time to first insight</span>
+              </li>
+              <li class="case-stat">
+                <span class="case-stat__num">2.3×</span>
+                <span class="case-stat__label">trial-to-paid conversion</span>
+              </li>
+              <li class="case-stat">
+                <span class="case-stat__num">−31%</span>
+                <span class="case-stat__label">first-week support tickets</span>
+              </li>
+            </ul>
+            <p>
+              Beyond the numbers, the trail gave the team a shared language for every new
+              feature: where does this fit on the path, and does it earn the interruption?
+            </p>
+          </section>
+
+          <footer class="case-study__foot">
+            <button type="button" class="button--outline is--back" data-detail-back>
+              <span aria-hidden="true">&larr;</span> Back to projects
+            </button>
+          </footer>
         </article>
       </div>
     </section>
@@ -183,7 +388,11 @@
     </div>
   </div>
 
+  <div class="crt" aria-hidden="true"></div>
+
   <script src="js/app.js" defer></script>
+  <script src="js/sounds.js" defer></script>
+  <script src="js/menubar.js" defer></script>
   <script src="js/cat.js" defer></script>
 </body>
 </html>

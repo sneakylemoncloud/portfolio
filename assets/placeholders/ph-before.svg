@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 600" preserveAspectRatio="xMidYMid slice" role="img" aria-label="BEFORE placeholder">
+  <rect width="680" height="600" fill="#c8bfa4"/>
+  <path d="M0 0 L680 600 M680 0 L0 600" stroke="#000" stroke-width="2" opacity="0.18"/>
+  <rect x="3" y="3" width="674" height="594" fill="none" stroke="#000" stroke-width="6"/>
+  <rect x="22" y="22" width="20" height="20" fill="#000"/>
+  <rect x="638" y="22" width="20" height="20" fill="#000"/>
+  <rect x="22" y="558" width="20" height="20" fill="#000"/>
+  <rect x="638" y="558" width="20" height="20" fill="#000"/>
+  <text x="340" y="294" font-family="monospace" font-size="46" font-weight="700" letter-spacing="4" text-anchor="middle" fill="#000">BEFORE</text>
+  <text x="340" y="334" font-family="monospace" font-size="22" letter-spacing="2" text-anchor="middle" fill="#000" opacity="0.55">legacy nav · 680×600</text>
+</svg>

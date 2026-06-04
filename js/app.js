@@ -30,30 +30,123 @@
     about: document.getElementById("dialog-about"),
   };
 
-  const folderGrid = document.querySelector("#dialog-work .folder-grid");
+  const workDialog = dialogs.work;
+  const workContent = workDialog ? workDialog.querySelector(".welcome-content") : null;
+  const workIndex = document.querySelector("#dialog-work .work-index");
   const projectDetail = document.getElementById("project-detail");
   const projectTitle = document.getElementById("project-detail-title");
   const projectBody = document.getElementById("project-detail-body");
-  const projectBack = document.getElementById("project-detail-back");
+  const caseStudies = {
+    compass: document.getElementById("case-compass"),
+  };
 
   let activeDialog = null;
+  let activeOrigin = null;
+
+  // Read the motion language from CSS so JS and CSS never drift apart.
+  const rootStyle = getComputedStyle(document.documentElement);
+  const EASE_SNAP = rootStyle.getPropertyValue("--ease-snap").trim() || "cubic-bezier(0.2,0.9,0.25,1.15)";
+  const EASE_OUT = rootStyle.getPropertyValue("--ease-out").trim() || "cubic-bezier(0.16,1,0.3,1)";
+  const EASE_IN = rootStyle.getPropertyValue("--ease-in").trim() || "cubic-bezier(0.5,0,0.75,0)";
+  const DUR_WINDOW = parseFloat(rootStyle.getPropertyValue("--dur-window")) || 360;
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const canAnimate = typeof Element !== "undefined" && "animate" in Element.prototype;
+
+  // The transform that maps the window's final rect onto the icon that spawned it.
+  function originTransform(dialog, originEl) {
+    const d = dialog.getBoundingClientRect();
+    const o = originEl.getBoundingClientRect();
+    const dx = o.left + o.width / 2 - (d.left + d.width / 2);
+    const dy = o.top + o.height / 2 - (d.top + d.height / 2);
+    const sx = Math.max(o.width / d.width, 0.08);
+    const sy = Math.max(o.height / d.height, 0.08);
+    return `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`;
+  }
+
+  // Window springs out of its icon with a CRT brightness bloom and a little overshoot.
+  function animateWindowOpen(dialog, originEl) {
+    if (reduceMotion.matches || !originEl || !canAnimate) return;
+    layer.getAnimations().forEach((a) => a.cancel());
+    layer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: EASE_OUT });
+    dialog.getAnimations().forEach((a) => a.cancel());
+    dialog.animate(
+      [
+        { transform: originTransform(dialog, originEl), opacity: 0, filter: "brightness(1.9)" },
+        { transform: "translate(0, 0) scale(1, 1)", opacity: 1, filter: "brightness(1)" },
+      ],
+      { duration: DUR_WINDOW, easing: EASE_SNAP, fill: "backwards" }
+    );
+  }
+
+  // Close collapses back into the icon; done() hides the layer once the motion lands.
+  function animateWindowClose(dialog, originEl, done) {
+    if (reduceMotion.matches || !originEl || !canAnimate) {
+      done();
+      return;
+    }
+    // Match the window collapse duration and hold at 0 so the backdrop never
+    // snaps back to full opacity before the layer is hidden.
+    layer.getAnimations().forEach((a) => a.cancel());
+    layer.animate([{ opacity: 1 }, { opacity: 0 }], {
+      duration: 220,
+      easing: EASE_IN,
+      fill: "forwards",
+    });
+    dialog.getAnimations().forEach((a) => a.cancel());
+    const anim = dialog.animate(
+      [
+        { transform: "translate(0, 0) scale(1, 1)", opacity: 1 },
+        { transform: originTransform(dialog, originEl), opacity: 0 },
+      ],
+      { duration: 220, easing: EASE_IN, fill: "forwards" }
+    );
+    anim.onfinish = () => {
+      done();
+      anim.cancel();
+    };
+  }
+
+  function hideAllCaseStudies() {
+    Object.values(caseStudies).forEach((el) => {
+      if (el) el.hidden = true;
+    });
+  }
 
   function hideProjectDetail() {
-    if (!projectDetail || !folderGrid) return;
-    projectDetail.hidden = true;
-    folderGrid.classList.remove("is-hidden");
+    if (workIndex) workIndex.classList.remove("is-hidden");
+    if (projectDetail) projectDetail.hidden = true;
+    hideAllCaseStudies();
+    if (workDialog) workDialog.classList.remove("is--reading");
+    if (workContent) workContent.scrollTop = 0;
   }
 
   function showProjectDetail(id) {
+    if (!workIndex) return;
+
+    const caseEl = caseStudies[id];
+    if (caseEl) {
+      if (projectDetail) projectDetail.hidden = true;
+      hideAllCaseStudies();
+      workIndex.classList.add("is-hidden");
+      caseEl.hidden = false;
+      if (workDialog) workDialog.classList.add("is--reading");
+      if (workContent) workContent.scrollTop = 0;
+      return;
+    }
+
     const data = PROJECTS[id];
-    if (!data || !projectDetail || !folderGrid) return;
+    if (!data || !projectDetail) return;
     projectTitle.textContent = data.title;
     projectBody.textContent = data.body;
-    folderGrid.classList.add("is-hidden");
+    hideAllCaseStudies();
+    workIndex.classList.add("is-hidden");
+    if (workDialog) workDialog.classList.remove("is--reading");
     projectDetail.hidden = false;
+    if (workContent) workContent.scrollTop = 0;
   }
 
-  function openDialog(name) {
+  function openDialog(name, originEl) {
     const dialog = dialogs[name];
     if (!dialog) return;
 
@@ -65,32 +158,49 @@
 
     dialog.hidden = false;
     activeDialog = name;
+    activeOrigin = originEl || null;
     layer.hidden = false;
     layer.setAttribute("aria-hidden", "false");
     home.setAttribute("aria-hidden", "true");
 
+    animateWindowOpen(dialog, originEl);
+
     const closeBtn = dialog.querySelector("[data-close]");
-    if (closeBtn) closeBtn.focus();
+    if (closeBtn) closeBtn.focus({ preventScroll: true });
   }
 
   function closeAll() {
-    Object.values(dialogs).forEach((el) => {
-      el.hidden = true;
-    });
+    const dialog = activeDialog ? dialogs[activeDialog] : null;
+    const origin = activeOrigin;
     activeDialog = null;
-    layer.hidden = true;
-    layer.setAttribute("aria-hidden", "true");
-    home.removeAttribute("aria-hidden");
-    hideProjectDetail();
+    activeOrigin = null;
+
+    const finish = () => {
+      Object.values(dialogs).forEach((el) => {
+        el.hidden = true;
+      });
+      layer.hidden = true;
+      layer.setAttribute("aria-hidden", "true");
+      home.removeAttribute("aria-hidden");
+      hideProjectDetail();
+    };
+
+    if (dialog) animateWindowClose(dialog, origin, finish);
+    else finish();
   }
 
   document.querySelectorAll("[data-dialog]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      openDialog(btn.getAttribute("data-dialog"));
+      openDialog(btn.getAttribute("data-dialog"), btn);
     });
   });
 
   document.querySelectorAll("[data-close]").forEach((btn) => {
+    btn.addEventListener("click", closeAll);
+  });
+
+  // Menu-bar "Lemonade / home" returns to the desktop (closes any open window).
+  document.querySelectorAll('[data-action="home"]').forEach((btn) => {
     btn.addEventListener("click", closeAll);
   });
 
@@ -108,7 +218,7 @@
     });
   });
 
-  if (projectBack) {
-    projectBack.addEventListener("click", hideProjectDetail);
-  }
+  document.querySelectorAll("[data-detail-back]").forEach((btn) => {
+    btn.addEventListener("click", hideProjectDetail);
+  });
 })();

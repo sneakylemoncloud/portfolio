@@ -1,3 +1,6 @@
 .DS_Store
 Thumbs.db
 *.log
+
+# Local Claude Code / editor tooling
+.claude/

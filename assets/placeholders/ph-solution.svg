@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" preserveAspectRatio="xMidYMid slice" role="img" aria-label="SOLUTION placeholder">
+  <rect width="1200" height="680" fill="#cbc2a8"/>
+  <path d="M0 0 L1200 680 M1200 0 L0 680" stroke="#000" stroke-width="2" opacity="0.18"/>
+  <rect x="3" y="3" width="1194" height="674" fill="none" stroke="#000" stroke-width="6"/>
+  <rect x="22" y="22" width="20" height="20" fill="#000"/>
+  <rect x="1158" y="22" width="20" height="20" fill="#000"/>
+  <rect x="22" y="638" width="20" height="20" fill="#000"/>
+  <rect x="1158" y="638" width="20" height="20" fill="#000"/>
+  <text x="600" y="334" font-family="monospace" font-size="46" font-weight="700" letter-spacing="4" text-anchor="middle" fill="#000">SOLUTION</text>
+  <text x="600" y="374" font-family="monospace" font-size="22" letter-spacing="2" text-anchor="middle" fill="#000" opacity="0.55">guided flow · 1200×680</text>
+</svg>
