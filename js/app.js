@@ -152,10 +152,12 @@
   function openDialog(name, originEl) {
     const dialog = dialogs[name];
     if (!dialog) return;
-    // Mark a new operation so any in-flight close cleanup won't hide this window.
     opToken += 1;
 
+    // Clear any pointer-events restrictions left over from a closing state.
+    layer.style.pointerEvents = "";
     Object.values(dialogs).forEach((el) => {
+      el.style.pointerEvents = "";
       el.hidden = true;
     });
 
@@ -186,26 +188,42 @@
     // Only when a window was actually open: play the close "whoosh".
     if (dialog) document.dispatchEvent(new CustomEvent("lemonade:windowclose"));
 
+    // Immediately remove pointer events from the layer and the closing dialog so
+    // the desktop tiles are clickable the instant close is triggered — even before
+    // the animation finishes. Clears the root cause of the "stuck backdrop" bug.
+    layer.style.pointerEvents = "none";
+    if (dialog) dialog.style.pointerEvents = "none";
+
     let done = false;
     const finish = () => {
-      // Bail if already cleaned up, or if a newer open/close has superseded this
-      // one (e.g. a window was opened during this close animation).
-      if (done || opToken !== myToken) return;
+      if (done) return;
       done = true;
-      Object.values(dialogs).forEach((el) => {
-        el.hidden = true;
-      });
-      layer.hidden = true;
-      layer.setAttribute("aria-hidden", "true");
-      home.removeAttribute("aria-hidden");
-      hideProjectDetail();
+      // Always fully clean up the closing dialog — never leave it hidden=false.
+      if (dialog) {
+        dialog.style.pointerEvents = "";
+        dialog.hidden = true;
+      }
+      // Only tear down the layer if no newer open superseded this close.
+      if (opToken === myToken) {
+        Object.values(dialogs).forEach((el) => {
+          el.style.pointerEvents = "";
+          el.hidden = true;
+        });
+        layer.style.pointerEvents = "";
+        layer.hidden = true;
+        layer.setAttribute("aria-hidden", "true");
+        home.removeAttribute("aria-hidden");
+        hideProjectDetail();
+      }
     };
 
     if (dialog) animateWindowClose(dialog, origin, finish);
-    else finish();
+    else {
+      layer.style.pointerEvents = "";
+      finish();
+    }
 
-    // Safety net: if the close animation's callback is ever lost (interrupted),
-    // still reconcile the layer state — unless this close was superseded.
+    // Safety net: if the animation callback is ever lost, still reconcile state.
     window.setTimeout(finish, 360);
   }
 
